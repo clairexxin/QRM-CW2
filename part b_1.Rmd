@@ -1,0 +1,71 @@
+---
+title: "CW2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+std <- read.csv('/Users/pan/Documents/Imperial/Autumn Term/Quantitative Risk Management (MATH97108)/CW2/std.csv')
+head(std)
+```
+
+Cross Correlation 
+
+```{r}
+acf(std, type = "correlation")
+mtext("Cross correlation between standard residuals", line=-1, side=3, outer=TRUE)
+```
+
+Absolute Cross Correlation
+
+```{r}
+ab_std <- read.csv('/Users/pan/Documents/Imperial/Autumn Term/Quantitative Risk Management (MATH97108)/CW2/ab_std.csv')
+head(ab_std)
+
+acf(ab_std, type = "correlation")
+mtext("Cross correlation between absolute standard residuals", line=-1, side=3, outer=TRUE)
+```
+
+(iii) fit a Gauss Copula 
+
+```{r}
+# Spearman's rho
+rho <- cor(std, method = "spearman")
+rho
+```
+
+```{r}
+# Compute Real P 
+#####
+reverse <- function(x) {
+  return(2*sin(pi*x/6))
+}
+
+
+P <- apply(rho, 2,reverse)
+P
+```
+
+Fit a Gauss Copula
+We estimate P by the matrix of pairwise Spearman’s rank correlation coefficients 
+
+```{r}
+library(QRM)
+copgauss <- fit.gausscopula(std)
+copgauss$P  #see this P 
+```
+
+(iv) Monte Carlo Stimulation for Gauss Copula 
+
+```{r}
+N <- 100000
+data <- rcopula.gauss(N,rho) 
+write.csv(data, "/Users/pan/Documents/Imperial/Autumn Term/Quantitative Risk Management (MATH97108)/CW2/stimulate.csv", row.names = FALSE)
+```
+
+
